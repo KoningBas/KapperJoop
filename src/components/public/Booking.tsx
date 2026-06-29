@@ -9,8 +9,10 @@ import { useBooking } from '../../hooks/useBooking'
 import { Button } from '../ui/Button'
 import { Input, Textarea } from '../ui/Input'
 import type { Service } from '../../types/database'
+import { KAPPERS } from '../../config/kappers'
+import type { KapperId } from '../../config/kappers'
 
-const STEP_LABELS = ['Dienst', 'Datum & tijd', 'Gegevens', 'Bevestigd']
+const STEP_LABELS = ['Dienst', 'Kapper', 'Datum & tijd', 'Gegevens', 'Bevestigd']
 
 interface StepIndicatorProps {
   current: number
@@ -139,7 +141,7 @@ interface BookingProps {
 export function Booking({ preselectServiceId }: BookingProps) {
   const { services } = useServices(true)
   const { settings } = useSettings()
-  const { state, setService, setDate, setSlot, goToStep3, updateField, goBack, submit, reset } = useBooking()
+  const { state, setService, selectKapper, setDate, setSlot, goToStep4, updateField, goBack, submit, reset } = useBooking()
 
   const slotInterval = settings?.slot_interval_minutes ?? 15
   const noticeHours = settings?.booking_notice_hours ?? 2
@@ -148,7 +150,8 @@ export function Booking({ preselectServiceId }: BookingProps) {
     state.date,
     state.service?.duration_minutes ?? 0,
     slotInterval,
-    noticeHours
+    noticeHours,
+    state.kapper
   )
 
   // Preselect service from CTA
@@ -208,8 +211,40 @@ export function Booking({ preselectServiceId }: BookingProps) {
             </div>
           )}
 
-          {/* Step 2 — Date & Time */}
+          {/* Step 2 — Kapper selection */}
           {state.step === 2 && (
+            <div className="space-y-6">
+              <h3 className="font-display text-2xl text-[#3D2B1F]">Kies je kapper</h3>
+              <div className="grid grid-cols-3 gap-4">
+                {KAPPERS.map(kapper => (
+                  <button
+                    key={kapper.id}
+                    onClick={() => selectKapper(kapper.id)}
+                    className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-[#C49A6C]/20 hover:border-[#C49A6C] hover:bg-[#C49A6C]/5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A6C]"
+                  >
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-label font-semibold"
+                      style={{ backgroundColor: kapper.colorHex }}
+                    >
+                      {kapper.name[0]}
+                    </div>
+                    <span className="font-label text-sm uppercase tracking-wider text-[#3D2B1F]">
+                      {kapper.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex justify-start">
+                <Button variant="ghost" size="md" onClick={goBack}>
+                  <ChevronLeft size={16} className="mr-2" />
+                  Terug
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3 — Date & Time */}
+          {state.step === 3 && (
             <div>
               <h3 className="text-2xl font-bold text-[#3D2B1F] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}>Kies datum &amp; tijd</h3>
@@ -292,7 +327,7 @@ export function Booking({ preselectServiceId }: BookingProps) {
                   <ChevronLeft size={16} className="mr-2" />
                   Terug
                 </Button>
-                <Button variant="copper" size="md" onClick={goToStep3} disabled={!state.slot}>
+                <Button variant="copper" size="md" onClick={goToStep4} disabled={!state.slot}>
                   Verder
                   <ChevronRight size={16} className="ml-2" />
                 </Button>
@@ -300,8 +335,8 @@ export function Booking({ preselectServiceId }: BookingProps) {
             </div>
           )}
 
-          {/* Step 3 — Contact info */}
-          {state.step === 3 && (
+          {/* Step 4 — Contact info */}
+          {state.step === 4 && (
             <div>
               <h3 className="text-2xl font-bold text-[#3D2B1F] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}>Jouw gegevens</h3>
@@ -391,8 +426,8 @@ export function Booking({ preselectServiceId }: BookingProps) {
             </div>
           )}
 
-          {/* Step 4 — Confirmation */}
-          {state.step === 4 && (
+          {/* Step 5 — Confirmation */}
+          {state.step === 5 && (
             <div className="text-center py-6">
               <div className="flex items-center justify-center mb-6">
                 <CheckCircle size={56} className="text-[#C49A6C]" strokeWidth={1.5} />

@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Service, TimeSlot } from '../types/database'
 import { format } from 'date-fns'
+import type { KapperId } from '../config/kappers'
 
-export type BookingStep = 1 | 2 | 3 | 4
+export type BookingStep = 1 | 2 | 3 | 4 | 5
 
 export interface BookingState {
   step: BookingStep
   service: Service | null
+  kapper: KapperId | null
   date: Date | null
   slot: TimeSlot | null
   fullName: string
@@ -23,6 +25,7 @@ export function useBooking() {
   const [state, setState] = useState<BookingState>({
     step: 1,
     service: null,
+    kapper: null,
     date: null,
     slot: null,
     fullName: '',
@@ -35,7 +38,7 @@ export function useBooking() {
   })
 
   function setService(service: Service) {
-    setState(s => ({ ...s, service, step: 2, date: null, slot: null }))
+    setState(s => ({ ...s, service, step: 2, kapper: null, date: null, slot: null }))
   }
 
   function setDate(date: Date) {
@@ -46,8 +49,8 @@ export function useBooking() {
     setState(s => ({ ...s, slot }))
   }
 
-  function goToStep3() {
-    if (state.slot) setState(s => ({ ...s, step: 3 }))
+  function goToStep4() {
+    if (state.slot) setState(s => ({ ...s, step: 4 }))
   }
 
   function updateField(field: 'fullName' | 'email' | 'phone' | 'notes', value: string) {
@@ -55,7 +58,13 @@ export function useBooking() {
   }
 
   function goBack() {
-    setState(s => ({ ...s, step: Math.max(1, s.step - 1) as BookingStep, error: null }))
+    setState(s => ({
+      ...s,
+      step: s.step > 1 ? (s.step - 1) as BookingStep : 1,
+      error: null,
+      ...(s.step === 3 ? { date: null, slot: null } : {}),
+      ...(s.step === 2 ? { kapper: null } : {}),
+    }))
   }
 
   async function submit() {
@@ -75,6 +84,7 @@ export function useBooking() {
       email: state.email,
       phone: state.phone,
       service_id: state.service.id,
+      kapper_id: state.kapper,
       appointment_date: appointmentDate,
       start_time: startTime,
       end_time: endTime,
@@ -87,16 +97,19 @@ export function useBooking() {
       return
     }
 
-    setState(s => ({ ...s, submitting: false, step: 4, appointmentId: data.id }))
+    setState(s => ({ ...s, submitting: false, step: 5, appointmentId: data.id }))
   }
 
   function reset() {
     setState({
-      step: 1, service: null, date: null, slot: null,
+      step: 1, service: null, kapper: null, date: null, slot: null,
       fullName: '', email: '', phone: '', notes: '',
       submitting: false, error: null, appointmentId: null,
     })
   }
 
-  return { state, setService, setDate, setSlot, goToStep3, updateField, goBack, submit, reset }
+  const selectKapper = (kapperId: KapperId) =>
+    setState(s => ({ ...s, kapper: kapperId, step: 3 }))
+
+  return { state, setService, selectKapper, setDate, setSlot, goToStep4, updateField, goBack, submit, reset }
 }
