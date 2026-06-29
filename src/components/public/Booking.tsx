@@ -220,7 +220,7 @@ export function Booking({ preselectServiceId }: BookingProps) {
                   <button
                     key={kapper.id}
                     onClick={() => selectKapper(kapper.id)}
-                    className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-[#C49A6C]/20 hover:border-[#C49A6C] hover:bg-[#C49A6C]/5 transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A6C]"
+                    className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-[#C49A6C]/20 hover:border-[#C49A6C] hover:bg-[#C49A6C]/5 transition-[border-color,background-color] duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A6C]"
                   >
                     <div
                       className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-label font-semibold"
