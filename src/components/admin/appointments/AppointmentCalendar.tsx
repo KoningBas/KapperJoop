@@ -8,8 +8,8 @@ import AppointmentCard from './AppointmentCard'
 
 type ViewMode = 'dag' | 'week'
 
-const HOUR_W = 90      // px per uur
-const ROW_H = 96       // px per kapper-rij
+const HOUR_W = 112     // px per uur — breedte per uur in de tijdlijn
+const ROW_H = 100      // px per kapper-rij
 const T_START = 8 * 60 // 8:00 in minuten
 const T_END = 19 * 60  // 19:00
 const HOURS = Array.from({ length: T_END / 60 - T_START / 60 }, (_, i) => i + T_START / 60)
@@ -146,8 +146,13 @@ export default function AppointmentCalendar({ appointments, onEdit, onDelete }: 
                     {appts.map(a => {
                       const left = ((toMin(a.start_time) - T_START) / 60) * HOUR_W
                       const dur = toMin(a.end_time) - toMin(a.start_time)
-                      const width = Math.max((dur / 60) * HOUR_W - 4, 40)
+                      const width = Math.max((dur / 60) * HOUR_W - 4, 36)
                       const svc = (a.services as { name?: string })?.name ?? ''
+                      const firstName = a.full_name.split(' ')[0]
+                      // Adaptief: toon meer naarmate het blok breder is
+                      const showFullName = width >= 100
+                      const showFirstName = width >= 56
+                      const showService = svc && width >= 130 && dur >= 45
                       return (
                         <button
                           key={a.id}
@@ -155,15 +160,17 @@ export default function AppointmentCalendar({ appointments, onEdit, onDelete }: 
                           className="absolute top-2 bottom-2 rounded-lg text-left overflow-hidden transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 shadow-sm"
                           style={{ left: left + 2, width, backgroundColor: k.colorHex + 'E8' }}
                         >
-                          <div className="h-full px-2.5 py-2 flex flex-col justify-center gap-0.5 min-w-0">
+                          <div className="h-full px-2 py-1.5 flex flex-col justify-center gap-0.5">
                             <div className="text-[10px] font-label font-semibold text-white/70 leading-none tabular-nums whitespace-nowrap">
                               {a.start_time.slice(0, 5)}–{a.end_time.slice(0, 5)}
                             </div>
-                            <div className="text-[13px] font-body font-semibold text-white leading-tight truncate">
-                              {a.full_name}
-                            </div>
-                            {svc && dur >= 45 && (
-                              <div className="text-[11px] text-white/60 truncate">{svc}</div>
+                            {showFirstName && (
+                              <div className="text-[13px] font-body font-semibold text-white leading-tight whitespace-nowrap overflow-hidden">
+                                {showFullName ? a.full_name : firstName}
+                              </div>
+                            )}
+                            {showService && (
+                              <div className="text-[10px] text-white/65 whitespace-nowrap overflow-hidden">{svc}</div>
                             )}
                           </div>
                         </button>
