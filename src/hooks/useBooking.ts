@@ -88,7 +88,7 @@ export function useBooking() {
       appointment_date: appointmentDate,
       start_time: startTime,
       end_time: endTime,
-      status: 'pending',
+      status: 'confirmed',
       notes: state.notes || null,
     }]).select().single()
 
