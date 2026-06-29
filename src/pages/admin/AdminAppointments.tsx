@@ -15,7 +15,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'agenda',         label: 'Agenda',          icon: <Calendar size={15} /> },
 ]
 
-export default function AdminAppointments() {
+export function AdminAppointments() {
   const {
     pending, confirmed, loading, error,
     updateStatus, updateAppointment, deleteAppointment,
