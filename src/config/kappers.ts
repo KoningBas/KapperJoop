@@ -17,9 +17,6 @@ export const KAPPER_MAP = Object.fromEntries(
 ) as Record<KapperId, Kapper>
 
 export function getKapper(id: string): Kapper {
-  return KAPPER_MAP[id as KapperId] ?? {
-    id: id as KapperId,
-    name: id,
-    colorHex: '#9CA3AF',
-  }
+  if (id in KAPPER_MAP) return KAPPER_MAP[id as KapperId]
+  return { id: id as KapperId, name: id, colorHex: '#9CA3AF' }
 }
