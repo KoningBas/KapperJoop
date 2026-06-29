@@ -14,92 +14,166 @@ export function Services({ onBookService }: ServicesProps) {
   }
 
   return (
-    <section id="diensten" className="py-24 bg-[#F5F0E8]">
-      <div className="max-w-7xl mx-auto px-6">
+    <section
+      id="diensten"
+      className="relative py-24 bg-[#1A1410] grain-overlay overflow-hidden"
+    >
+      {/* Radial gradients */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 60% 50% at 5% 10%, rgba(196,154,108,0.07) 0%, transparent 60%)',
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 40% 35% at 95% 90%, rgba(44,31,20,0.5) 0%, transparent 60%)',
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="mb-14">
+          <p
+            className="text-[#C49A6C] font-semibold uppercase mb-4"
+            style={{
+              fontFamily: "'Oswald', sans-serif",
+              fontSize: '11px',
+              letterSpacing: '0.22em',
+            }}
+          >
+            · DIENSTEN &amp; PRIJZEN ·
+          </p>
           <h2
-            className="text-5xl md:text-6xl font-bold text-[#3D2B1F] tracking-[-0.02em] mb-4"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-[#F5F0E8] font-bold tracking-[-0.02em] mb-4"
+            style={{
+              fontFamily: "'Playfair Display SC', serif",
+              fontSize: 'clamp(36px, 4.5vw, 56px)',
+            }}
           >
             Diensten &amp; Prijzen
           </h2>
-          <p className="text-[#3D2B1F]/75 text-lg max-w-xl mx-auto leading-relaxed"
-            style={{ fontFamily: "'Lora', serif" }}>
+          <p
+            className="text-[rgba(245,240,232,0.55)]"
+            style={{ fontFamily: "'Lora', serif", fontSize: '16px', lineHeight: 1.7 }}
+          >
             Knippen, trimmen, scheren. Joop doet het al jaren. En dat zie je.
           </p>
         </div>
 
-        {/* Cards grid */}
+        {/* Top rule */}
+        <div className="w-full h-px" style={{ background: 'rgba(196,154,108,0.3)' }} />
+
+        {/* Price list rows */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-[#FDFAF5] h-48 animate-pulse rounded-2xl border border-[rgba(196,154,108,0.15)]" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {services.map((service, i) => (
-              <div
-                key={service.id}
-                className="group bg-[#FDFAF5] rounded-2xl p-7 flex flex-col gap-4 animate-fadeInUp"
-                style={{
-                  border: '1px solid rgba(196,154,108,0.2)',
-                  boxShadow: '0 2px 12px rgba(196,154,108,0.07), 0 8px 32px rgba(26,20,16,0.06)',
-                  animationDelay: `${i * 80}ms`,
-                  transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'
-                  ;(e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(196,154,108,0.14), 0 16px 48px rgba(26,20,16,0.1)'
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
-                  ;(e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 12px rgba(196,154,108,0.07), 0 8px 32px rgba(26,20,16,0.06)'
-                }}
-              >
-                {/* Top row: name + price */}
-                <div className="flex items-start justify-between gap-4">
-                  <h3
-                    className="text-2xl font-bold text-[#3D2B1F] leading-tight"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    {service.name}
-                  </h3>
-                  <span
-                    className="text-3xl font-bold text-[#C49A6C] flex-shrink-0 leading-none"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    €{Number(service.price).toFixed(0)}
-                  </span>
+              <div key={i}>
+                <div className="py-7 flex items-center justify-between gap-6 animate-pulse">
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 rounded" style={{ background: 'rgba(196,154,108,0.1)', width: '40%' }} />
+                    <div className="h-3 rounded" style={{ background: 'rgba(196,154,108,0.06)', width: '65%' }} />
+                  </div>
+                  <div className="h-8 w-24 rounded" style={{ background: 'rgba(196,154,108,0.08)' }} />
                 </div>
+                <div className="w-full h-px" style={{ background: 'rgba(196,154,108,0.15)' }} />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            {services.map((service, i) => (
+              <div key={service.id}>
+                <div
+                  className="py-7 flex items-center gap-6 animate-fadeInUp group cursor-default"
+                  style={{
+                    animationDelay: `${i * 60}ms`,
+                    transition: 'background 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+                    borderRadius: '4px',
+                    marginLeft: '-16px',
+                    paddingLeft: '16px',
+                    marginRight: '-16px',
+                    paddingRight: '16px',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLDivElement).style.background = 'rgba(196,154,108,0.05)'
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLDivElement).style.background = 'transparent'
+                  }}
+                >
+                  {/* Left: name + description */}
+                  <div className="flex-1 min-w-0">
+                    <h3
+                      className="text-[#F5F0E8] font-semibold uppercase leading-tight mb-1"
+                      style={{
+                        fontFamily: "'Oswald', sans-serif",
+                        fontSize: 'clamp(17px, 2vw, 22px)',
+                        letterSpacing: '0.08em',
+                      }}
+                    >
+                      {service.name}
+                    </h3>
+                    {service.description && (
+                      <p
+                        className="text-[rgba(245,240,232,0.45)] truncate"
+                        style={{ fontFamily: "'Lora', serif", fontSize: '13px', lineHeight: 1.6 }}
+                      >
+                        {service.description}
+                      </p>
+                    )}
+                  </div>
 
-                {/* Description */}
-                <p className="text-[#3D2B1F]/75 text-base leading-relaxed"
-                  style={{ fontFamily: "'Lora', serif" }}>
-                  {service.description}
-                </p>
-
-                {/* Bottom row: duration + book */}
-                <div className="flex items-center justify-between pt-2 mt-auto">
+                  {/* Duration */}
                   <span
-                    className="text-xs font-semibold uppercase tracking-widest text-[#A07848]"
-                    style={{ fontFamily: "'Oswald', sans-serif" }}
+                    className="text-[#C49A6C] font-semibold uppercase flex-shrink-0 hidden sm:block"
+                    style={{
+                      fontFamily: "'Oswald', sans-serif",
+                      fontSize: '11px',
+                      letterSpacing: '0.18em',
+                      minWidth: '60px',
+                      textAlign: 'right',
+                    }}
                   >
                     {service.duration_minutes} min
                   </span>
+
+                  {/* Price */}
+                  <span
+                    className="text-[#C49A6C] font-bold flex-shrink-0 leading-none"
+                    style={{
+                      fontFamily: "'Playfair Display', serif",
+                      fontSize: 'clamp(28px, 3.5vw, 42px)',
+                      letterSpacing: '-0.02em',
+                      minWidth: '72px',
+                      textAlign: 'right',
+                    }}
+                  >
+                    €{Number(service.price).toFixed(0)}
+                  </span>
+
+                  {/* Book button */}
                   <Button
-                    variant="copper"
+                    variant="outline"
                     size="sm"
-                    className="rounded-full"
+                    className="rounded-full flex-shrink-0"
                     onClick={() => scrollToBooking(service.id)}
                   >
-                    Boek direct
+                    Boek
                   </Button>
                 </div>
+                <div
+                  className="w-full h-px"
+                  style={{ background: 'rgba(196,154,108,0.18)' }}
+                />
               </div>
             ))}
-          </div>
+          </>
         )}
       </div>
     </section>
