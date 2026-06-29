@@ -15,7 +15,10 @@ export function useAdminAppointments() {
       .order('appointment_date', { ascending: true })
       .order('start_time', { ascending: true })
     if (err) setError(err.message)
-    else setAppointments((data ?? []) as Appointment[])
+    else {
+      setAppointments((data ?? []) as Appointment[])
+      setError(null)
+    }
     setLoading(false)
   }, [])
 
@@ -23,24 +26,27 @@ export function useAdminAppointments() {
     const today = new Date().toISOString().split('T')[0]
     const nowTime = new Date().toTimeString().slice(0, 8)
 
-    await supabase
+    const { error: e1 } = await supabase
       .from('appointments')
       .update({ status: 'cancelled' })
       .eq('status', 'pending')
       .lt('appointment_date', today)
+    if (e1) console.warn('Auto-cleanup (pending→cancelled):', e1.message)
 
-    await supabase
+    const { error: e2 } = await supabase
       .from('appointments')
       .update({ status: 'completed' })
       .eq('status', 'confirmed')
       .lt('appointment_date', today)
+    if (e2) console.warn('Auto-cleanup (confirmed past→completed):', e2.message)
 
-    await supabase
+    const { error: e3 } = await supabase
       .from('appointments')
       .update({ status: 'completed' })
       .eq('status', 'confirmed')
       .eq('appointment_date', today)
       .lt('end_time', nowTime)
+    if (e3) console.warn('Auto-cleanup (same-day past→completed):', e3.message)
 
     await refetch()
   }, [refetch])
