@@ -45,7 +45,7 @@ export function About() {
               <img
                 src={IMAGES.about}
                 alt="Kapper Joop aan het werk"
-                className="w-full h-[560px] object-cover"
+                className="w-full h-[280px] sm:h-[400px] md:h-[560px] object-cover"
               />
               {/* Color treatment overlay */}
               <div className="absolute inset-0"
@@ -53,8 +53,8 @@ export function About() {
               />
             </div>
             {/* Decorative copper corner */}
-            <div className="absolute -bottom-4 -left-4 w-16 h-16 border-l-2 border-b-2 border-[rgba(196,154,108,0.4)]" />
-            <div className="absolute -top-4 -right-4 w-16 h-16 border-r-2 border-t-2 border-[rgba(196,154,108,0.4)]" />
+            <div className="hidden sm:block absolute -bottom-4 -left-4 w-16 h-16 border-l-2 border-b-2 border-[rgba(196,154,108,0.4)]" />
+            <div className="hidden sm:block absolute -top-4 -right-4 w-16 h-16 border-r-2 border-t-2 border-[rgba(196,154,108,0.4)]" />
           </div>
         </div>
       </div>

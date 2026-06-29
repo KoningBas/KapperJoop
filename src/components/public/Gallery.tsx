@@ -15,7 +15,7 @@ export function Gallery() {
         {/* Header */}
         <div className="mb-14">
           <h2
-            className="text-5xl md:text-6xl font-bold italic text-[#FDFAF5] tracking-[-0.02em] mb-3"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold italic text-[#FDFAF5] tracking-[-0.02em] mb-3"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Het Ambacht
@@ -34,7 +34,6 @@ export function Gallery() {
               className={`group relative overflow-hidden bg-[#2C1F14] ${i === 0 ? 'md:row-span-2' : ''}`}
               style={{
                 aspectRatio: i === 0 ? 'auto' : '4/3',
-                minHeight: i === 0 ? '400px' : undefined,
               }}
             >
               <img
@@ -51,7 +50,7 @@ export function Gallery() {
                 style={{ background: 'linear-gradient(to top, rgba(26,20,16,0.8) 0%, rgba(26,20,16,0.2) 60%, transparent 100%)' }}
               />
               {/* Caption */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-[opacity,transform] duration-300">
                 <p className="text-[#D4B48C] text-xs font-semibold uppercase tracking-widest"
                   style={{ fontFamily: "'Oswald', sans-serif" }}>
                   {GALLERY_CAPTIONS[i]}

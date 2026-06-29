@@ -38,7 +38,11 @@ export function useBooking() {
   })
 
   function setService(service: Service) {
-    setState(s => ({ ...s, service, step: 2, kapper: null, date: null, slot: null }))
+    setState(s => ({ ...s, service, kapper: null, date: null, slot: null }))
+  }
+
+  function goToStep2() {
+    setState(s => s.service ? { ...s, step: 2 } : s)
   }
 
   function setDate(date: Date) {
@@ -120,7 +124,11 @@ export function useBooking() {
   }
 
   const selectKapper = (kapperId: KapperId) =>
-    setState(s => ({ ...s, kapper: kapperId, step: 3 }))
+    setState(s => ({ ...s, kapper: kapperId }))
 
-  return { state, setService, selectKapper, setDate, setSlot, goToStep4, updateField, goBack, submit, reset }
+  function goToStep3() {
+    setState(s => s.kapper ? { ...s, step: 3 } : s)
+  }
+
+  return { state, setService, goToStep2, selectKapper, goToStep3, setDate, setSlot, goToStep4, updateField, goBack, submit, reset }
 }

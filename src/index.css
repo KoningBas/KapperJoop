@@ -85,6 +85,31 @@ body {
   }
 }
 
+/* Step transition animations */
+@keyframes stepEnterRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes stepEnterLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.step-enter-right {
+  animation: stepEnterRight 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.step-enter-left {
+  animation: stepEnterLeft 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-enter-right,
+  .step-enter-left {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Copper ornament line */
 .ornament-line {
   display: flex;

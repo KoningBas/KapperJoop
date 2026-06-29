@@ -25,7 +25,7 @@ export function Reviews() {
         {/* Header */}
         <div className="text-center mb-14">
           <h2
-            className="text-5xl md:text-6xl font-bold text-[#3D2B1F] tracking-[-0.02em]"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#3D2B1F] tracking-[-0.02em]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Wat Rijssen zegt
@@ -37,7 +37,7 @@ export function Reviews() {
           {REVIEWS.map((review, i) => (
             <div
               key={i}
-              className="bg-[#FDFAF5] p-8 flex flex-col gap-4 animate-fadeInUp"
+              className="bg-[#FDFAF5] rounded-2xl p-8 flex flex-col gap-4 animate-fadeInUp"
               style={{
                 border: '1px solid rgba(196,154,108,0.22)',
                 boxShadow: '0 2px 8px rgba(196,154,108,0.08), 0 8px 32px rgba(26,20,16,0.06)',
@@ -47,7 +47,7 @@ export function Reviews() {
               {/* Stars */}
               <div className="flex gap-1">
                 {[...Array(review.stars)].map((_, s) => (
-                  <svg key={s} width="15" height="15" viewBox="0 0 24 24" fill="#C49A6C" aria-hidden="true">
+                  <svg key={s} width="15" height="15" viewBox="0 0 24 24" fill="#A07848" aria-hidden="true">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
                 ))}
@@ -69,7 +69,7 @@ export function Reviews() {
 
               {/* Author */}
               <div className="pt-4 border-t border-[rgba(196,154,108,0.18)]">
-                <span className="text-[#A07848] text-xs font-semibold uppercase tracking-[0.15em]"
+                <span className="text-[#7C5A28] text-xs font-semibold uppercase tracking-[0.15em]"
                   style={{ fontFamily: "'Oswald', sans-serif" }}>
                   — {review.author}
                 </span>
@@ -84,7 +84,7 @@ export function Reviews() {
             href="https://www.google.com/maps/search/Kapper+Joop+Rijssen"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-[#A07848] hover:text-[#C49A6C] transition-colors text-sm font-semibold uppercase tracking-widest group"
+            className="inline-flex items-center gap-2 text-[#7C5A28] hover:text-[#A07848] transition-colors text-sm font-semibold uppercase tracking-widest group"
             style={{ fontFamily: "'Oswald', sans-serif" }}
           >
             Bekijk alle reviews op Google

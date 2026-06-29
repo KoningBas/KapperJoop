@@ -34,7 +34,7 @@ export function Hero() {
         <div className="max-w-2xl">
           {/* H1 */}
           <h1
-            className="text-7xl md:text-8xl font-bold text-[#FDFAF5] leading-none tracking-[-0.03em] mb-4 animate-fadeInUp"
+            className="text-[2.5rem] sm:text-5xl md:text-7xl lg:text-8xl font-bold text-[#FDFAF5] leading-none tracking-[-0.03em] mb-4 animate-fadeInUp"
             style={{ fontFamily: "'Playfair Display', serif", animationDelay: '80ms' }}
           >
             Kapper Joop

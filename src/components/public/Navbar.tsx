@@ -29,7 +29,7 @@ export function Navbar() {
     <>
       <nav
         style={{ fontFamily: "'Oswald', sans-serif" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,box-shadow] duration-300 ${
           isScrolled
             ? 'bg-[#1A1410]/95 backdrop-blur-md shadow-[0_2px_20px_rgba(26,20,16,0.5)]'
             : 'bg-[#1A1410]'

@@ -158,7 +158,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-[rgba(196,154,108,0.1)] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[#C9C0B4]/50 text-xs" style={{ fontFamily: "'Lora', serif" }}>
+          <p className="text-[#C9C0B4]/70 text-xs" style={{ fontFamily: "'Lora', serif" }}>
             © 2026 Kapper Joop – Rijssen
           </p>
           <p className="text-[#C49A6C]/60 text-xs font-semibold uppercase tracking-[0.2em]"
