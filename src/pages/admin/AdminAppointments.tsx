@@ -1,182 +1,160 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { useState } from 'react'
+import { Calendar, Inbox, ClipboardList } from 'lucide-react'
+import { useAdminAppointments } from '../../hooks/useAdminAppointments'
+import AppointmentCard from '../../components/admin/appointments/AppointmentCard'
+import AppointmentCalendar from '../../components/admin/appointments/AppointmentCalendar'
+import AppointmentEditModal from '../../components/admin/appointments/AppointmentEditModal'
+import ConfirmDialog from '../../components/admin/appointments/ConfirmDialog'
 import type { Appointment } from '../../types/database'
-import { format, parseISO } from 'date-fns'
-import { nl } from 'date-fns/locale'
-import { Calendar, Phone, Mail, Check, X, CheckCheck } from 'lucide-react'
 
-const STATUSES = ['all', 'pending', 'confirmed', 'cancelled', 'completed'] as const
-type StatusFilter = typeof STATUSES[number]
+type Tab = 'nieuw' | 'in-behandeling' | 'agenda'
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-50 text-amber-700 border-amber-200',
-  confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  cancelled: 'bg-red-50 text-red-600 border-red-200',
-  completed: 'bg-slate-50 text-slate-600 border-slate-200',
-}
+const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: 'nieuw',          label: 'Nieuw',          icon: <Inbox size={15} /> },
+  { id: 'in-behandeling', label: 'In behandeling', icon: <ClipboardList size={15} /> },
+  { id: 'agenda',         label: 'Agenda',          icon: <Calendar size={15} /> },
+]
 
-const STATUS_NL: Record<string, string> = {
-  pending: 'In behandeling',
-  confirmed: 'Bevestigd',
-  cancelled: 'Geannuleerd',
-  completed: 'Afgerond',
-  all: 'Alle',
-}
+export default function AdminAppointments() {
+  const {
+    pending, confirmed, loading, error,
+    updateStatus, updateAppointment, deleteAppointment,
+  } = useAdminAppointments()
 
+  const [activeTab, setActiveTab] = useState<Tab>('nieuw')
+  const [editTarget, setEditTarget] = useState<Appointment | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
-export function AdminAppointments() {
-  const [appointments, setAppointments] = useState<Appointment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<StatusFilter>('all')
-  const [updating, setUpdating] = useState<string | null>(null)
-
-  async function load() {
-    setLoading(true)
-    let query = supabase
-      .from('appointments')
-      .select('*, services(name)')
-      .order('appointment_date', { ascending: false })
-      .order('start_time', { ascending: true })
-
-    if (filter !== 'all') query = query.eq('status', filter)
-
-    const { data } = await query
-    setAppointments((data as Appointment[]) || [])
-    setLoading(false)
+  async function handleAccept(id: string) {
+    await updateStatus(id, 'confirmed')
   }
 
-  useEffect(() => { load() }, [filter])
+  async function handleReject(id: string) {
+    await updateStatus(id, 'cancelled')
+  }
 
-  async function updateStatus(id: string, status: string) {
-    setUpdating(id)
-    await supabase.from('appointments').update({ status }).eq('id', id)
-    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: status as Appointment['status'] } : a))
-    setUpdating(null)
+  async function handleDelete() {
+    if (!deleteTarget) return
+    setDeleting(true)
+    await deleteAppointment(deleteTarget)
+    setDeleting(false)
+    setDeleteTarget(null)
   }
 
   return (
-    <div>
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Afspraken</h1>
-          <p className="text-gray-500 text-sm mt-1">{appointments.length} afspraken gevonden</p>
-        </div>
-
-        {/* Status filter */}
-        <div className="flex flex-wrap gap-2">
-          {STATUSES.map(s => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded text-xs font-semibold border transition-colors ${
-                filter === s
-                  ? 'bg-[#C49A6C] text-[#1A1410] border-[#C49A6C]'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              {STATUS_NL[s]}
-            </button>
-          ))}
-        </div>
+    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      <div>
+        <h1 className="font-display text-3xl text-[#1A1410]">Afspraken</h1>
+        <p className="text-sm text-[#3D2B1F]/50 mt-1 font-body">
+          Beheer afspraken, verwerk aanvragen en bekijk de agenda per kapper.
+        </p>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="p-8 space-y-3">
-            {[...Array(5)].map((_, i) => <div key={i} className="h-16 bg-gray-50 animate-pulse rounded" />)}
-          </div>
-        ) : appointments.length === 0 ? (
-          <div className="py-16 text-center">
-            <Calendar size={36} className="mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-400 text-sm">Geen afspraken gevonden</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/50">
-                  {['Klant', 'Dienst', 'Datum & Tijd', 'Telefoon', 'E-mail', 'Status', 'Acties', 'Opmerking'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {appointments.map(appt => (
-                  <tr key={appt.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{appt.full_name}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{appt.services?.name ?? '—'}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
-                      <div>{format(parseISO(appt.appointment_date), 'd MMM yyyy', { locale: nl })}</div>
-                      <div className="text-xs text-gray-400">{appt.start_time?.slice(0, 5)} – {appt.end_time?.slice(0, 5)}</div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      <a href={`tel:${appt.phone}`} className="flex items-center gap-1 hover:text-[#C49A6C] transition-colors whitespace-nowrap">
-                        <Phone size={12} /> {appt.phone}
-                      </a>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      <a href={`mailto:${appt.email}`} className="flex items-center gap-1 hover:text-[#C49A6C] transition-colors">
-                        <Mail size={12} />
-                        <span className="max-w-[140px] truncate">{appt.email}</span>
-                      </a>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center text-xs font-medium border rounded px-2 py-1 ${STATUS_COLORS[appt.status]}`}>
-                        {STATUS_NL[appt.status]}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5">
-                        {appt.status === 'pending' && (
-                          <button
-                            onClick={() => updateStatus(appt.id, 'confirmed')}
-                            disabled={updating === appt.id}
-                            title="Bevestig afspraak"
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded hover:bg-emerald-700 disabled:opacity-50 transition-colors"
-                          >
-                            <Check size={12} />
-                            Bevestig
-                          </button>
-                        )}
-                        {appt.status === 'confirmed' && (
-                          <button
-                            onClick={() => updateStatus(appt.id, 'completed')}
-                            disabled={updating === appt.id}
-                            title="Markeer als afgerond"
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-slate-600 text-white rounded hover:bg-slate-700 disabled:opacity-50 transition-colors"
-                          >
-                            <CheckCheck size={12} />
-                            Afgerond
-                          </button>
-                        )}
-                        {(appt.status === 'pending' || appt.status === 'confirmed') && (
-                          <button
-                            onClick={() => updateStatus(appt.id, 'cancelled')}
-                            disabled={updating === appt.id}
-                            title="Annuleer afspraak"
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-white text-red-600 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50 transition-colors"
-                          >
-                            <X size={12} />
-                            Annuleer
-                          </button>
-                        )}
-                        {(appt.status === 'cancelled' || appt.status === 'completed') && (
-                          <span className="text-xs text-gray-300">—</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-400 text-xs max-w-[160px] truncate">
-                      {appt.notes || '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      {/* Tab bar */}
+      <div className="flex gap-0 border-b border-[#C49A6C]/15">
+        {TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-5 py-3 text-xs font-label uppercase tracking-wider border-b-2 transition-colors -mb-px ${
+              activeTab === tab.id
+                ? 'border-[#C49A6C] text-[#C49A6C]'
+                : 'border-transparent text-[#3D2B1F]/50 hover:text-[#3D2B1F] hover:border-[#C49A6C]/30'
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+            {tab.id === 'nieuw' && pending.length > 0 && (
+              <span className="ml-0.5 bg-[#C49A6C] text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center font-semibold leading-none">
+                {pending.length > 9 ? '9+' : pending.length}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
+
+      {/* States */}
+      {loading && (
+        <div className="py-16 text-center text-[#3D2B1F]/40 font-label text-xs uppercase tracking-wider">
+          Laden...
+        </div>
+      )}
+      {!loading && error && (
+        <div className="py-8 text-center text-red-600 text-sm font-body">{error}</div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {/* Tab: Nieuw — overzicht zonder actieknoppen */}
+          {activeTab === 'nieuw' && (
+            <div className="space-y-3">
+              {pending.length === 0
+                ? <EmptyState icon={<Inbox size={32} />} message="Geen nieuwe afspraken" />
+                : pending.map(a => (
+                    <AppointmentCard key={a.id} appointment={a} showActions="none" />
+                  ))
+              }
+            </div>
+          )}
+
+          {/* Tab: In behandeling — zelfde afspraken, nu met accept/afwijs-knoppen */}
+          {activeTab === 'in-behandeling' && (
+            <div className="space-y-3">
+              {pending.length === 0
+                ? <EmptyState icon={<ClipboardList size={32} />} message="Niets te verwerken" />
+                : pending.map(a => (
+                    <AppointmentCard
+                      key={a.id}
+                      appointment={a}
+                      showActions="accept-reject"
+                      onAccept={handleAccept}
+                      onReject={handleReject}
+                    />
+                  ))
+              }
+            </div>
+          )}
+
+          {/* Tab: Agenda — kalender van bevestigde afspraken */}
+          {activeTab === 'agenda' && (
+            <AppointmentCalendar
+              appointments={confirmed}
+              onEdit={setEditTarget}
+              onDelete={setDeleteTarget}
+            />
+          )}
+        </>
+      )}
+
+      {/* Bewerkmodal */}
+      {editTarget && (
+        <AppointmentEditModal
+          appointment={editTarget}
+          onSave={patch => updateAppointment(editTarget.id, patch)}
+          onClose={() => setEditTarget(null)}
+        />
+      )}
+
+      {/* Verwijder-bevestiging */}
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Afspraak verwijderen"
+          description="Weet je zeker dat je deze afspraak wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+          loading={deleting}
+        />
+      )}
+    </div>
+  )
+}
+
+function EmptyState({ icon, message }: { icon: React.ReactNode; message: string }) {
+  return (
+    <div className="flex flex-col items-center gap-3 py-16 text-[#3D2B1F]/30">
+      {icon}
+      <p className="text-xs font-label uppercase tracking-wider">{message}</p>
     </div>
   )
 }
