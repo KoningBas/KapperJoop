@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ChevronDown, ChevronUp, Clock, Phone, Mail, FileText, Edit2, Trash2, Check, X } from 'lucide-react'
 import type { Appointment } from '../../../types/database'
 import { getKapper } from '../../../config/kappers'
-import Button from '../../ui/Button'
+import { Button } from '../../ui/Button'
 
 interface Props {
   appointment: Appointment

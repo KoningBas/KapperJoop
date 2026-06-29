@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { Input } from '../../ui/Input'
-import Button from '../../ui/Button'
+import { Button } from '../../ui/Button'
 import { KAPPERS } from '../../../config/kappers'
 import type { Appointment } from '../../../types/database'
 

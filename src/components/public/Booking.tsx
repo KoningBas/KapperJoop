@@ -10,7 +10,6 @@ import { Button } from '../ui/Button'
 import { Input, Textarea } from '../ui/Input'
 import type { Service } from '../../types/database'
 import { KAPPERS } from '../../config/kappers'
-import type { KapperId } from '../../config/kappers'
 
 const STEP_LABELS = ['Dienst', 'Kapper', 'Datum & tijd', 'Gegevens', 'Bevestigd']
 
