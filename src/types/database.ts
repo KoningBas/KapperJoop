@@ -14,6 +14,7 @@ export interface Appointment {
   email: string
   phone: string
   service_id: string
+  kapper_id: string
   appointment_date: string
   start_time: string
   end_time: string
