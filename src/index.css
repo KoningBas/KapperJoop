@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette */
+  --color-koper: #C49A6C;
+  --color-koper-donker: #A07848;
+  --color-koper-licht: #D4B48C;
+  --color-houtskool: #1A1410;
+  --color-espresso: #2C1F14;
+  --color-creme: #F5F0E8;
+  --color-warm-wit: #FDFAF5;
+  --color-bruin-donker: #3D2B1F;
+
+  /* Font families */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-display-sc: 'Playfair Display SC', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
+  --font-label: 'Oswald', Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Lora', Georgia, serif;
+  background-color: #FDFAF5;
+  color: #3D2B1F;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Brand shadows */
+.shadow-koper {
+  box-shadow: 0 2px 8px rgba(196, 154, 108, 0.12), 0 8px 32px rgba(26, 20, 16, 0.18);
+}
+.shadow-koper-lg {
+  box-shadow: 0 4px 16px rgba(196, 154, 108, 0.18), 0 16px 48px rgba(26, 20, 16, 0.22);
+}
+
+/* Grain texture overlay for hero */
+.grain-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  z-index: 2;
+}
+
+/* Scroll reveal */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInUp {
+  animation: fadeInUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Slot animation */
+@keyframes slotFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slot {
+  animation: slotFadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeInUp,
+  .animate-slot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Copper ornament line */
+.ornament-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.ornament-line::before,
+.ornament-line::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(196, 154, 108, 0.6), transparent);
+}
