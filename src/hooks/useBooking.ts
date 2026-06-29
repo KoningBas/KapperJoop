@@ -97,6 +97,17 @@ export function useBooking() {
       return
     }
 
+    supabase.functions.invoke('send-booking-confirmation', {
+      body: {
+        fullName: state.fullName,
+        email: state.email,
+        serviceName: state.service.name,
+        kapperId: state.kapper,
+        appointmentDate,
+        startTime,
+      },
+    })
+
     setState(s => ({ ...s, submitting: false, step: 5, appointmentId: data.id }))
   }
 
