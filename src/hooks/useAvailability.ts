@@ -10,14 +10,14 @@ function parseTime(timeStr: string, date: Date): Date {
   return result
 }
 
-export function useAvailability(date: Date | null, durationMinutes: number, slotInterval: number, bookingNoticeHours: number) {
+export function useAvailability(date: Date | null, durationMinutes: number, slotInterval: number, bookingNoticeHours: number, kapperId: string | null) {
   const [slots, setSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(false)
   const [isBlocked, setIsBlocked] = useState(false)
   const [isClosed, setIsClosed] = useState(false)
 
   useEffect(() => {
-    if (!date || durationMinutes <= 0) {
+    if (!date || durationMinutes <= 0 || !kapperId) {
       setSlots([])
       return
     }
@@ -64,6 +64,7 @@ export function useAvailability(date: Date | null, durationMinutes: number, slot
         .from('appointments')
         .select('start_time, end_time')
         .eq('appointment_date', dateStr)
+        .eq('kapper_id', kapperId)
         .neq('status', 'cancelled')
 
       const dayStart = parseTime(hours.start_time, date)
@@ -108,7 +109,7 @@ export function useAvailability(date: Date | null, durationMinutes: number, slot
     }
 
     generate()
-  }, [date ? format(date, 'yyyy-MM-dd') : null, durationMinutes, slotInterval, bookingNoticeHours])
+  }, [date ? format(date, 'yyyy-MM-dd') : null, durationMinutes, slotInterval, bookingNoticeHours, kapperId])
 
   return { slots, loading, isBlocked, isClosed }
 }
